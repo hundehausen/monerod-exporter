@@ -1,4 +1,4 @@
-FROM  mhart/alpine-node:latest  as builder
+FROM  mhart/alpine-node:latest as builder
 
 RUN apk --no-cache add \
     git
@@ -11,3 +11,4 @@ RUN npm install
 
 ENTRYPOINT [ "node" ]
 CMD [ "index.js" ]
+EXPOSE 18083/tcp
