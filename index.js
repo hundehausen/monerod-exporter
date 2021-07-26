@@ -65,7 +65,6 @@ async function main() {
         const lastBlockHeader = metrics.lastBlockHeader.state;
         const info = metrics.info.state;
         const bans = metrics.peerBans;
-        debugger;
 
         difficulty.set(Number(info.difficulty));
         incomingConnections.set(Number(info.numIncomingConnections));
@@ -88,4 +87,4 @@ async function main() {
 main();
 
 module.exports = app;
-app.listen(PORT, () => console.log(`Listening on :${PORT}`));
+app.listen(PORT, () => console.log(`hundehausen/monerod-exporter serving on :${PORT}`));
