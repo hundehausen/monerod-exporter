@@ -1,0 +1,30 @@
+{
+  "name": "monerod-exporter",
+  "version": "1.0.0",
+  "description": "monerod prometheus exporter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hundehausen/monerod-exporter.git"
+  },
+  "keywords": [
+    "monerod",
+    "prometheus",
+    "exporter",
+    "monerod-exporter"
+  ],
+  "author": "hundehausen",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/hundehausen/monerod-exporter/issues"
+  },
+  "homepage": "https://github.com/hundehausen/monerod-exporter#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "monero-javascript": "^0.5.3",
+    "prom-client": "^13.1.0"
+  }
+}
