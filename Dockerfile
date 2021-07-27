@@ -10,7 +10,7 @@ RUN npm install
 
 EXPOSE 18083/tcp
 ENV PORT=18083
-ENV DAEMON_HOST=http://your-monerod:18081
+ENV DAEMON_HOST=http://127.0.0.1:18081
 
 ENTRYPOINT [ "node" ]
 CMD [ "index.js" ]
