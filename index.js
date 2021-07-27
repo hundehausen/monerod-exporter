@@ -44,16 +44,43 @@ const updateAvailable = new Gauge({
   name: "monerod_update_available",
   help: "Boolean of update available",
 });
-const peerBans = new Gauge({
+const peerBansMetric = new Gauge({
   name: "monerod_peer_bans",
   help: "Number of banned peers",
 });
+const isMiningActive = new Gauge({
+  name: "monerod_is_mining_active",
+  help: "Status of mining active",
+});
+const miningThreads = new Gauge({
+  name: "monerod_mining_threads",
+  help: "Number of active mining threads",
+});
+const miningSpeed = new Gauge({
+  name: "monerod_mining_speed",
+  help: "Number of mining speed in hashes per second",
+});
+const syncPercentageMetric = new Gauge({
+  name: "monerod_sync_percentage",
+  help: "Percentage of synced blocks",
+});
+
+async function getSyncStatus(daemon) {
+  const { height, targetHeight } = (await daemon.getSyncInfo()).state;
+  if (targetHeight > height) {
+    return (height / targetHeight) * 100;
+  }
+  return 100;
+}
 
 async function getMetrics(daemon) {
-  const lastBlockHeader = await daemon.getLastBlockHeader();
-  const info = await daemon.getInfo();
+  const lastBlockHeader = (await daemon.getLastBlockHeader()).state;
+  const info = (await daemon.getInfo()).state;
   const peerBans = await daemon.getPeerBans();
-  return { lastBlockHeader: lastBlockHeader, info: info, peerBans: peerBans };
+  debugger;
+  const miningStatus = (await daemon.getMiningStatus()).state;
+  const syncPercentage = await getSyncStatus(daemon);
+  return { lastBlockHeader, info, peerBans, miningStatus, syncPercentage };
 }
 
 async function main() {
@@ -61,24 +88,33 @@ async function main() {
 
   app.get("/metrics", (req, res) => {
     getMetrics(daemon)
-      .then(async (metrics) => {
-        const lastBlockHeader = metrics.lastBlockHeader.state;
-        const info = metrics.info.state;
-        const bans = metrics.peerBans;
+      .then(
+        async ({
+          lastBlockHeader,
+          info,
+          peerBans,
+          miningStatus,
+          syncPercentage,
+        }) => {
+          difficulty.set(Number(info.difficulty));
+          incomingConnections.set(Number(info.numIncomingConnections));
+          outgoingConnections.set(Number(info.numOutgoingConnections));
+          mempoolSize.set(Number(info.numTxsPool));
+          txCount.set(Number(info.numTxs));
+          databaseSize.set(Number(info.databaseSize));
+          blockHeight.set(Number(info.height));
+          updateAvailable.set(Number(info.updateAvailable));
+          reward.set(Number(lastBlockHeader.reward / 1e12));
+          peerBansMetric.set(Number(peerBans.length));
+          isMiningActive.set(Number(miningStatus.isActive));
+          miningThreads.set(Number(miningStatus.numThreads));
+          miningSpeed.set(Number(miningStatus.speed));
+          syncPercentageMetric.set(Number(syncPercentage));
 
-        difficulty.set(Number(info.difficulty));
-        incomingConnections.set(Number(info.numIncomingConnections));
-        outgoingConnections.set(Number(info.numOutgoingConnections));
-        mempoolSize.set(Number(info.numTxsPool));
-        txCount.set(Number(info.numTxs));
-        databaseSize.set(Number(info.databaseSize));
-        blockHeight.set(Number(info.height));
-        updateAvailable.set(Number(info.updateAvailable));
-        reward.set(Number(lastBlockHeader.reward / 1e12));
-        peerBans.set(Number(bans.length));
-        const registredMetrics = await prometheus.register.metrics();
-        res.end(registredMetrics);
-      })
+          const registredMetrics = await prometheus.register.metrics();
+          res.end(registredMetrics);
+        }
+      )
       .catch((e) => {
         console.log(e);
       });
@@ -87,4 +123,6 @@ async function main() {
 main();
 
 module.exports = app;
-app.listen(PORT, () => console.log(`hundehausen/monerod-exporter serving on :${PORT}`));
+app.listen(PORT, () =>
+  console.log(`hundehausen/monerod-exporter serving on :${PORT}`)
+);
