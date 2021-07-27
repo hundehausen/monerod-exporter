@@ -9,7 +9,7 @@ services:
     ports:
       - 18083:18083
     environment: 
-      DAEMON_HOST: http://your-monerod:18081
+      DAEMON_HOST: http://monerod:18081
       PORT: 18083
   prometheus:
     image: prom/prometheus:latest
@@ -40,3 +40,12 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
+  monerod:
+    image: hundehausen/monero-full-node:latest
+    container_name: monero-full-node
+    volumes:
+        - ./bitmonero:/home/monero/.bitmonero
+    restart: unless-stopped
+    ports:
+    - 18080:18080
+    - 18081:18081
