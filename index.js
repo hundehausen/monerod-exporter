@@ -77,7 +77,6 @@ async function getMetrics(daemon) {
   const lastBlockHeader = (await daemon.getLastBlockHeader()).state;
   const info = (await daemon.getInfo()).state;
   const peerBans = await daemon.getPeerBans();
-  debugger;
   const miningStatus = (await daemon.getMiningStatus()).state;
   const syncPercentage = await getSyncStatus(daemon);
   return { lastBlockHeader, info, peerBans, miningStatus, syncPercentage };
