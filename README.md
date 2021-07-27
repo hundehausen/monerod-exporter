@@ -25,3 +25,7 @@ Prometheus Exporter for monerod
 docker pull hundehausen/monerod-exporter
 docker run -p 18083:18083 -e DAEMON_HOST=http://127.0.0.1:18081 --name monerod-exporter hundehausen/monerod-exporter 
 ```
+
+## Donations
+If you love your new Monero Metrics Dashboard, you can tip me:
+84vnEdv2GmHPrs38MkT2KVd5XXkEBA1f639TvCDoqXtt2woSsCAz9Zxcd3ocqLnMEKTPTTaTGRjvD9TxqXPXXiAgPesDmHT
