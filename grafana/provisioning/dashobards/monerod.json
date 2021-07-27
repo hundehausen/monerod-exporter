@@ -1081,7 +1081,7 @@
         },
         "gridPos": {
           "h": 8,
-          "w": 12,
+          "w": 24,
           "x": 0,
           "y": 40
         },
@@ -1111,6 +1111,23 @@
         ],
         "title": "Mining Hashrate",
         "type": "timeseries"
+      },
+      {
+        "datasource": null,
+        "gridPos": {
+          "h": 3,
+          "w": 24,
+          "x": 0,
+          "y": 48
+        },
+        "id": 28,
+        "options": {
+          "content": "Please consider a donation:\n\n84vnEdv2GmHPrs38MkT2KVd5XXkEBA1f639TvCDoqXtt2woSsCAz9Zxcd3ocqLnMEKTPTTaTGRjvD9TxqXPXXiAgPesDmHT",
+          "mode": "markdown"
+        },
+        "pluginVersion": "8.0.6",
+        "title": "Donation",
+        "type": "text"
       }
     ],
     "schemaVersion": 30,
@@ -1126,6 +1143,6 @@
     "timepicker": {},
     "timezone": "",
     "title": "Monerod",
-    "uid": "VB9lasZnk",
-    "version": 10
+    "uid": "w0f_LyZ7k",
+    "version": 2
   }
