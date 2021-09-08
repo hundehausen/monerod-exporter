@@ -24,7 +24,7 @@
   "homepage": "https://github.com/hundehausen/monerod-exporter#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "monero-javascript": "^0.5.3",
-    "prom-client": "^13.1.0"
+    "monero-javascript": "^0.5.5",
+    "prom-client": "^13.2.0"
   }
 }

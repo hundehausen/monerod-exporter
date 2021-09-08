@@ -1,16 +1,18 @@
-FROM  mhart/alpine-node:latest as builder
+FROM  mhart/alpine-node:latest as build-env
 
-RUN apk --no-cache add git
+ADD package.json /app/package.json
+ADD package-lock.json /app/package-lock.json
+ADD index.js /app/index.js
+WORKDIR /app
 
-RUN git clone https://github.com/hundehausen/monerod-exporter.git /app/monerod-exporter
+RUN npm ci --only=production
 
-WORKDIR /app/monerod-exporter
-
-RUN npm install
+FROM gcr.io/distroless/nodejs:latest
+COPY --from=build-env /app /app
+WORKDIR /app
 
 EXPOSE 18083/tcp
 ENV PORT=18083
 ENV DAEMON_HOST=http://your-monerod:18081
 
-ENTRYPOINT [ "node" ]
 CMD [ "index.js" ]

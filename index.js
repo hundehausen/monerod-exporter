@@ -2,7 +2,7 @@ const monerojs = require("monero-javascript");
 const express = require("express");
 const prometheus = require("prom-client");
 
-const DAEMON_HOST = process.env.DAEMON_HOST || "http://127.0.0.1:18081";
+const DAEMON_HOST = process.env.DAEMON_HOST || "http://192.168.1.6:18081";
 const PORT = process.env.PORT || 18083;
 const Gauge = prometheus.Gauge;
 
