@@ -28,4 +28,4 @@ docker run -p 18083:18083 -e DAEMON_HOST=http://127.0.0.1:18081 --name monerod-e
 
 ## Donations
 If you love your new Monero Metrics Dashboard, you can tip me:
-84vnEdv2GmHPrs38MkT2KVd5XXkEBA1f639TvCDoqXtt2woSsCAz9Zxcd3ocqLnMEKTPTTaTGRjvD9TxqXPXXiAgPesDmHT
+89HEKdUFM2dJGDFLpV7CoLUW1Swux7iBMMCXMC5y3U2DihmrbYh6AEoanoHb8VPJrCDLTa9FJfooHdz1rGZH9L342TXwZh7
