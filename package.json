@@ -1,6 +1,6 @@
 {
   "name": "monerod-exporter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "monerod prometheus exporter",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "homepage": "https://github.com/hundehausen/monerod-exporter#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "monero-javascript": "^0.5.5",
-    "prom-client": "^13.2.0"
+    "monero-javascript": "^0.5.9",
+    "prom-client": "^14.0.1"
   }
 }
