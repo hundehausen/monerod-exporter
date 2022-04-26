@@ -104,7 +104,7 @@ async function main() {
           blockHeight.set(Number(info.height));
           updateAvailable.set(Number(info.updateAvailable));
           reward.set(Number(lastBlockHeader.reward / 1e12));
-          peerBansMetric.set(Number(peerBans.length));
+          peerBansMetric.set(Number(peerBans?.length || 0));
           isMiningActive.set(Number(miningStatus.isActive));
           miningThreads.set(Number(miningStatus.numThreads));
           miningSpeed.set(Number(miningStatus.speed));
