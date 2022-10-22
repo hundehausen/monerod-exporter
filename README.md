@@ -11,7 +11,6 @@ Prometheus Exporter for monerod
 * monerod_is_mining_active
 * monerod_mining_speed
 * monerod_mining_threads
-* monerod_peer_bans
 * monerod_sync_percentage
 * monerod_tx_chain
 * monerod_tx_mempool
