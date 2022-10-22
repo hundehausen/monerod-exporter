@@ -2,7 +2,7 @@ const monerojs = require("monero-javascript");
 const express = require("express");
 const prometheus = require("prom-client");
 
-const DAEMON_HOST = process.env.DAEMON_HOST || "http://127.0.0.1:18081";
+const DAEMON_HOST = process.env.DAEMON_HOST || "http://localhost:18081";
 const PORT = process.env.PORT || 18083;
 const Gauge = prometheus.Gauge;
 
@@ -44,10 +44,6 @@ const updateAvailable = new Gauge({
   name: "monerod_update_available",
   help: "Boolean of update available",
 });
-const peerBansMetric = new Gauge({
-  name: "monerod_peer_bans",
-  help: "Number of banned peers",
-});
 const isMiningActive = new Gauge({
   name: "monerod_is_mining_active",
   help: "Status of mining active",
@@ -74,11 +70,13 @@ async function getSyncPercentage(daemon) {
 }
 
 async function getAllMetrics(daemon) {
+  let miningStatus, syncPercentage = null;
   const lastBlockHeader = (await daemon.getLastBlockHeader()).state;
   const info = (await daemon.getInfo()).state;
-  // const peerBans = await daemon.getPeerBans();
-  const miningStatus = (await daemon.getMiningStatus()).state;
-  const syncPercentage = await getSyncPercentage(daemon);
+  if (!info.isRestricted) {
+    miningStatus = (await daemon.getMiningStatus()).state;
+    syncPercentage = await getSyncPercentage(daemon);
+  } 
   return { lastBlockHeader, info, miningStatus, syncPercentage };
 }
 
@@ -99,10 +97,9 @@ async function main() {
       blockHeight.set(Number(info.height));
       updateAvailable.set(Number(info.updateAvailable));
       reward.set(Number(lastBlockHeader.reward / 1e12));
-      peerBansMetric.set(Number(-1));
-      isMiningActive.set(Number(miningStatus.isActive));
-      miningThreads.set(Number(miningStatus.numThreads));
-      miningSpeed.set(Number(miningStatus.speed));
+      isMiningActive.set(Number(miningStatus?.isActive || -1));
+      miningThreads.set(Number(miningStatus?.numThreads || -1));
+      miningSpeed.set(Number(miningStatus?.speed || -1));
       syncPercentageMetric.set(Number(syncPercentage));
 
       const registredMetrics = await prometheus.register.metrics();
