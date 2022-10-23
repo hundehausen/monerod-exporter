@@ -1,9 +1,13 @@
 const monerojs = require("monero-javascript");
 const express = require("express");
 const prometheus = require("prom-client");
+require('dotenv').config();
 
-const DAEMON_HOST = process.env.DAEMON_HOST || "http://localhost:18081";
-const PORT = process.env.PORT || 18083;
+const DAEMON_HOST = process.env.DAEMON_HOST || "http://localhost:18081",
+  DAEMON_USER = process.env.DAEMON_USER,
+  DAEMON_PASS = process.env.DAEMON_PASS,
+  PORT = process.env.PORT || 18083;
+
 const Gauge = prometheus.Gauge;
 
 const app = express();
@@ -61,7 +65,7 @@ const syncPercentageMetric = new Gauge({
   help: "Percentage of synced blocks",
 });
 
-async function getSyncPercentage(daemon) {
+async function getSyncPercentage (daemon) {
   const { height, targetHeight } = (await daemon.getSyncInfo()).state;
   if (targetHeight > height) {
     return (height / targetHeight) * 100;
@@ -69,19 +73,27 @@ async function getSyncPercentage(daemon) {
   return 100;
 }
 
-async function getAllMetrics(daemon) {
+async function getAllMetrics (daemon) {
   let miningStatus, syncPercentage = null;
   const lastBlockHeader = (await daemon.getLastBlockHeader()).state;
   const info = (await daemon.getInfo()).state;
   if (!info.isRestricted) {
     miningStatus = (await daemon.getMiningStatus()).state;
     syncPercentage = await getSyncPercentage(daemon);
-  } 
+  }
   return { lastBlockHeader, info, miningStatus, syncPercentage };
 }
 
-async function main() {
-  const daemon = await monerojs.connectToDaemonRpc(DAEMON_HOST);
+async function main () {
+  const config = {
+    uri: DAEMON_HOST
+  }
+  if (DAEMON_USER)
+    config.username = DAEMON_USER;
+  if (DAEMON_PASS)
+    config.password = DAEMON_PASS;
+
+  const daemon = await monerojs.connectToDaemonRpc(config);
 
   app.get("/metrics", async (req, res) => {
     try {
