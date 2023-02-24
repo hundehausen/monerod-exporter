@@ -1,10 +1,12 @@
-const monerojs = require("monero-javascript");
-const express = require("express");
-const prometheus = require("prom-client");
+import { connectToDaemonRpc } from "monero-javascript";
+import { Gauge as _Gauge, register } from "prom-client";
+import * as dotenv from "dotenv";
+dotenv.config();
+import express from "express";
 
 const DAEMON_HOST = process.env.DAEMON_HOST || "http://localhost:18081";
 const PORT = process.env.PORT || 18083;
-const Gauge = prometheus.Gauge;
+const Gauge = _Gauge;
 
 const app = express();
 
@@ -70,47 +72,45 @@ async function getSyncPercentage(daemon) {
 }
 
 async function getAllMetrics(daemon) {
-  let miningStatus, syncPercentage = null;
+  let miningStatus,
+    syncPercentage = null;
   const lastBlockHeader = (await daemon.getLastBlockHeader()).state;
   const info = (await daemon.getInfo()).state;
   if (!info.isRestricted) {
     miningStatus = (await daemon.getMiningStatus()).state;
     syncPercentage = await getSyncPercentage(daemon);
-  } 
+  }
   return { lastBlockHeader, info, miningStatus, syncPercentage };
 }
 
-async function main() {
-  const daemon = await monerojs.connectToDaemonRpc(DAEMON_HOST);
+const daemon = await connectToDaemonRpc(DAEMON_HOST);
 
-  app.get("/metrics", async (req, res) => {
-    try {
-      const { lastBlockHeader, info, miningStatus, syncPercentage } =
-        await getAllMetrics(daemon);
+app.get("/metrics", async (req, res) => {
+  try {
+    const { lastBlockHeader, info, miningStatus, syncPercentage } =
+      await getAllMetrics(daemon);
 
-      difficulty.set(Number(info.difficulty));
-      incomingConnections.set(Number(info.numIncomingConnections));
-      outgoingConnections.set(Number(info.numOutgoingConnections));
-      mempoolSize.set(Number(info.numTxsPool));
-      txCount.set(Number(info.numTxs));
-      databaseSize.set(Number(info.databaseSize));
-      blockHeight.set(Number(info.height));
-      updateAvailable.set(Number(info.updateAvailable));
-      reward.set(Number(lastBlockHeader.reward / 1e12));
-      isMiningActive.set(Number(miningStatus?.isActive || -1));
-      miningThreads.set(Number(miningStatus?.numThreads || -1));
-      miningSpeed.set(Number(miningStatus?.speed || -1));
-      syncPercentageMetric.set(Number(syncPercentage));
+    difficulty.set(Number(info.difficulty));
+    incomingConnections.set(Number(info.numIncomingConnections));
+    outgoingConnections.set(Number(info.numOutgoingConnections));
+    mempoolSize.set(Number(info.numTxsPool));
+    txCount.set(Number(info.numTxs));
+    databaseSize.set(Number(info.databaseSize));
+    blockHeight.set(Number(info.height));
+    updateAvailable.set(Number(info.updateAvailable));
+    reward.set(Number(lastBlockHeader.reward / 1e12));
+    isMiningActive.set(Number(miningStatus?.isActive || -1));
+    miningThreads.set(Number(miningStatus?.numThreads || -1));
+    miningSpeed.set(Number(miningStatus?.speed || -1));
+    syncPercentageMetric.set(Number(syncPercentage));
 
-      const registredMetrics = await prometheus.register.metrics();
-      res.end(registredMetrics);
-    } catch (error) {
-      console.log(error);
-      res.status(500).end();
-    }
-  });
-}
-main();
+    const registredMetrics = await register.metrics();
+    res.status(200).end(registredMetrics);
+  } catch (error) {
+    console.log(error);
+    res.status(500).end();
+  }
+});
 
 app.listen(PORT, () =>
   console.log(`hundehausen/monerod-exporter serving on :${PORT}`)
