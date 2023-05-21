@@ -112,6 +112,10 @@ app.get("/metrics", async (req, res) => {
   }
 });
 
+app.get("/", async (req, res) => {
+  res.status(200).end(`<p>go to <a href="/metrics">/metrics</a></p>`);
+});
+
 app.listen(PORT, () =>
   console.log(`hundehausen/monerod-exporter serving on :${PORT}`)
 );

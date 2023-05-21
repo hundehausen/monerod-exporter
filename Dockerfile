@@ -1,4 +1,4 @@
-FROM  mhart/alpine-node:latest as build-env
+FROM  node:alpine as build-env
 
 ADD package.json /app/package.json
 ADD package-lock.json /app/package-lock.json
@@ -7,7 +7,7 @@ WORKDIR /app
 
 RUN npm ci --only=production
 
-FROM gcr.io/distroless/nodejs:latest
+FROM node:alpine
 COPY --from=build-env /app /app
 WORKDIR /app
 
